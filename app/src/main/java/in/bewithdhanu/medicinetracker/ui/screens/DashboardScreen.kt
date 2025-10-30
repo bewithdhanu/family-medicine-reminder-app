@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import `in`.bewithdhanu.medicinetracker.R
+import `in`.bewithdhanu.medicinetracker.ui.components.CommunicationCard
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -64,6 +65,11 @@ fun DashboardScreen(
             // Greeting and Time Card
             item {
                 DateTimeCard(currentTime)
+            }
+            
+            // Quick Communication Card
+            item {
+                CommunicationCard()
             }
             
             // Quick Actions
