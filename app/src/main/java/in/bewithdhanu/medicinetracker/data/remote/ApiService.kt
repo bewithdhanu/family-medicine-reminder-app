@@ -118,5 +118,22 @@ interface ApiService {
     
     @POST("api/insulin/")
     suspend fun createInsulinLog(@Body request: CreateInsulinLogRequest): Response<InsulinLog>
+
+    // ==================== Bookmarks ====================
+
+    @GET("api/bookmarks/")
+    suspend fun getBookmarks(): Response<List<Bookmark>>
+
+    @POST("api/bookmarks/")
+    suspend fun createBookmark(@Body request: CreateBookmarkRequest): Response<Bookmark>
+
+    @PUT("api/bookmarks/{id}")
+    suspend fun updateBookmark(
+        @Path("id") bookmarkId: Int,
+        @Body request: UpdateBookmarkRequest
+    ): Response<Bookmark>
+
+    @DELETE("api/bookmarks/{id}")
+    suspend fun deleteBookmark(@Path("id") bookmarkId: Int): Response<Unit>
 }
 

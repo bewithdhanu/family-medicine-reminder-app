@@ -8,18 +8,51 @@ data class User(
     @SerializedName("id") val id: Int,
     @SerializedName("name") val name: String,
     @SerializedName("photo_url") val photoUrl: String?,
+    @SerializedName("avatar_emoji") val avatarEmoji: String? = null,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String
 )
 
 data class CreateUserRequest(
     @SerializedName("name") val name: String,
-    @SerializedName("photo_url") val photoUrl: String? = null
+    @SerializedName("photo_url") val photoUrl: String? = null,
+    @SerializedName("avatar_emoji") val avatarEmoji: String? = null
 )
 
 data class UpdateUserRequest(
     @SerializedName("name") val name: String? = null,
-    @SerializedName("photo_url") val photoUrl: String? = null
+    @SerializedName("photo_url") val photoUrl: String? = null,
+    @SerializedName("avatar_emoji") val avatarEmoji: String? = null
+)
+
+// ==================== Bookmark Models ====================
+
+data class Bookmark(
+    @SerializedName("id") val id: Int,
+    @SerializedName("name") val name: String,
+    @SerializedName("phone_number") val phoneNumber: String,
+    @SerializedName("contact_type") val contactType: String, // "phone" or "whatsapp"
+    @SerializedName("photo_url") val photoUrl: String? = null,
+    @SerializedName("avatar_emoji") val avatarEmoji: String? = null,
+    @SerializedName("is_active") val isActive: Boolean,
+    @SerializedName("created_at") val createdAt: String
+)
+
+data class CreateBookmarkRequest(
+    @SerializedName("name") val name: String,
+    @SerializedName("phone_number") val phoneNumber: String,
+    @SerializedName("contact_type") val contactType: String,
+    @SerializedName("photo_url") val photoUrl: String? = null,
+    @SerializedName("avatar_emoji") val avatarEmoji: String? = null
+)
+
+data class UpdateBookmarkRequest(
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("phone_number") val phoneNumber: String? = null,
+    @SerializedName("contact_type") val contactType: String? = null,
+    @SerializedName("photo_url") val photoUrl: String? = null,
+    @SerializedName("avatar_emoji") val avatarEmoji: String? = null,
+    @SerializedName("is_active") val isActive: Boolean? = null
 )
 
 // ==================== Medicine Models ====================

@@ -3,19 +3,27 @@ package `in`.bewithdhanu.medicinetracker.ui.components
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import `in`.bewithdhanu.medicinetracker.R
 import `in`.bewithdhanu.medicinetracker.utils.CommunicationHelper
+import `in`.bewithdhanu.medicinetracker.ui.components.ImagePickerDialog
+import androidx.compose.foundation.shape.CircleShape
+import coil.compose.AsyncImage
+import android.net.Uri
 
 /**
  * Communication shortcuts card for Dashboard
@@ -30,6 +38,14 @@ fun CommunicationCard() {
     var contactName1 by remember { mutableStateOf("Father") }
     var phoneNumber2 by remember { mutableStateOf("+919876543211") }
     var contactName2 by remember { mutableStateOf("Mother") }
+    // Avatars (emoji or image)
+    var contactEmoji1 by remember { mutableStateOf("👨") }
+    var contactImageUri1 by remember { mutableStateOf<Uri?>(null) }
+    var contactEmoji2 by remember { mutableStateOf("👩") }
+    var contactImageUri2 by remember { mutableStateOf<Uri?>(null) }
+    var showAvatarPickerFor by remember { mutableStateOf<Int?>(null) }
+    var showImagePicker by remember { mutableStateOf(false) }
+    var pendingAvatarIndex by remember { mutableStateOf<Int?>(null) }
     
     Card(
         modifier = Modifier
@@ -72,8 +88,11 @@ fun CommunicationCard() {
             ContactRow(
                 name = contactName1,
                 phoneNumber = phoneNumber1,
+                emoji = contactEmoji1,
+                imageUri = contactImageUri1,
                 onCallClick = { CommunicationHelper.makePhoneCall(context, phoneNumber1) },
-                onWhatsAppClick = { CommunicationHelper.openWhatsAppChat(context, phoneNumber1) }
+                onWhatsAppClick = { CommunicationHelper.openWhatsAppChat(context, phoneNumber1) },
+                onAvatarClick = { showAvatarPickerFor = 1 }
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -82,8 +101,11 @@ fun CommunicationCard() {
             ContactRow(
                 name = contactName2,
                 phoneNumber = phoneNumber2,
+                emoji = contactEmoji2,
+                imageUri = contactImageUri2,
                 onCallClick = { CommunicationHelper.makePhoneCall(context, phoneNumber2) },
-                onWhatsAppClick = { CommunicationHelper.openWhatsAppChat(context, phoneNumber2) }
+                onWhatsAppClick = { CommunicationHelper.openWhatsAppChat(context, phoneNumber2) },
+                onAvatarClick = { showAvatarPickerFor = 2 }
             )
         }
     }
@@ -105,21 +127,88 @@ fun CommunicationCard() {
             }
         )
     }
+
+    // Avatar Picker (emoji or image)
+    showAvatarPickerFor?.let { which ->
+        AvatarPickerDialog(
+            currentEmoji = if (which == 1) contactEmoji1 else contactEmoji2,
+            currentImageUri = if (which == 1) contactImageUri1 else contactImageUri2,
+            onPickEmoji = { emoji ->
+                if (which == 1) {
+                    contactEmoji1 = emoji
+                    contactImageUri1 = null
+                } else {
+                    contactEmoji2 = emoji
+                    contactImageUri2 = null
+                }
+                showAvatarPickerFor = null
+            },
+            onPickImage = {
+                pendingAvatarIndex = which
+                showImagePicker = true
+            },
+            onDismiss = { showAvatarPickerFor = null }
+        )
+    }
+
+    if (showImagePicker) {
+        ImagePickerDialog(
+            onDismiss = { showImagePicker = false },
+            onImageSelected = { uri ->
+                if (pendingAvatarIndex == 1) {
+                    contactImageUri1 = uri
+                } else if (pendingAvatarIndex == 2) {
+                    contactImageUri2 = uri
+                }
+                showImagePicker = false
+                showAvatarPickerFor = null
+            }
+        )
+    }
 }
 
 @Composable
 fun ContactRow(
     name: String,
     phoneNumber: String,
+    emoji: String?,
+    imageUri: Uri?,
     onCallClick: () -> Unit,
-    onWhatsAppClick: () -> Unit
+    onWhatsAppClick: () -> Unit,
+    onAvatarClick: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            // Avatar
+            if (imageUri != null) {
+                AsyncImage(
+                    model = imageUri,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                )
+            } else {
+                Surface(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape),
+                    color = MaterialTheme.colorScheme.secondary
+                ) {
+                    Text(
+                        text = emoji ?: "🙂",
+                        style = TextStyle(fontSize = 28.sp),
+                        modifier = Modifier.fillMaxSize(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = name,
                 fontSize = 22.sp,
@@ -131,9 +220,22 @@ fun ContactRow(
                 fontSize = 18.sp,
                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
             )
+            }
         }
         
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Change avatar (emoji/image)
+            FilledTonalButton(
+                onClick = onAvatarClick,
+                modifier = Modifier.size(56.dp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Icon(
+                    Icons.Default.CameraAlt,
+                    contentDescription = "Avatar",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
             // Phone Call Button
             FilledTonalButton(
                 onClick = onCallClick,
@@ -251,6 +353,52 @@ fun EditContactsDialog(
                 modifier = Modifier.height(56.dp)
             ) {
                 Text("Cancel", fontSize = 20.sp)
+            }
+        }
+    )
+}
+
+@Composable
+fun AvatarPickerDialog(
+    currentEmoji: String?,
+    currentImageUri: Uri?,
+    onPickEmoji: (String) -> Unit,
+    onPickImage: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val emojis = listOf("👨", "👩", "🧓", "👴", "👵", "🧑", "👧", "👦", "❤️", "💊")
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Choose Avatar", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(text = "Select an emoji:", fontSize = 18.sp)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    emojis.forEach { e ->
+                        FilledTonalButton(
+                            onClick = { onPickEmoji(e) },
+                            modifier = Modifier.size(48.dp),
+                            contentPadding = PaddingValues(0.dp)
+                        ) {
+                            Text(text = e, fontSize = 22.sp)
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Or upload an image:", fontSize = 18.sp)
+                Button(onClick = onPickImage, modifier = Modifier.height(56.dp)) {
+                    Icon(Icons.Default.CameraAlt, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Choose Photo", fontSize = 20.sp)
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss, modifier = Modifier.height(56.dp)) {
+                Text("Close", fontSize = 20.sp)
             }
         }
     )
