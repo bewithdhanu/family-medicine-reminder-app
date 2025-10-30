@@ -65,4 +65,11 @@ Family Medication Reminder and Launcher Application for elderly parents (tablet-
 - Use WorkManager/AlarmManager for reminders
 - Support camera/gallery for medicine photos
 
+## Security & Configuration
+- **NEVER hardcode API endpoint or API key in code**
+- API endpoint and API key must come from `local.properties` (gitignored)
+- Use BuildConfig to access configuration values
+- Provide `local.properties.example` as template
+- Use EncryptedSharedPreferences for storing sensitive data at runtime
+
 
