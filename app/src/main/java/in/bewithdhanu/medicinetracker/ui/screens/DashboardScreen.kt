@@ -31,6 +31,7 @@ fun DashboardScreen(
     onNavigateToUsers: () -> Unit,
     onNavigateToMedicines: () -> Unit,
     onNavigateToReminders: () -> Unit,
+    onNavigateToContacts: () -> Unit,
     onNavigateToInsulinTracking: () -> Unit
 ) {
     // Prepare Bookmark ViewModel (simple inline init for now)
@@ -105,6 +106,15 @@ fun DashboardScreen(
                     title = stringResource(R.string.nav_medicines),
                     icon = Icons.Default.Medication,
                     onClick = onNavigateToMedicines
+                )
+            }
+
+            // Contacts Card
+            item {
+                DashboardCard(
+                    title = "Contacts",
+                    icon = Icons.Default.Phone,
+                    onClick = onNavigateToContacts
                 )
             }
             
