@@ -25,7 +25,8 @@ import java.util.*
 fun DashboardScreen(
     onNavigateToUsers: () -> Unit,
     onNavigateToMedicines: () -> Unit,
-    onNavigateToReminders: () -> Unit
+    onNavigateToReminders: () -> Unit,
+    onNavigateToInsulinTracking: () -> Unit
 ) {
     var currentTime by remember { mutableStateOf(getCurrentTime()) }
     
@@ -99,6 +100,15 @@ fun DashboardScreen(
                     title = stringResource(R.string.nav_reminders),
                     icon = Icons.Default.Notifications,
                     onClick = onNavigateToReminders
+                )
+            }
+            
+            // Insulin Tracking Card
+            item {
+                DashboardCard(
+                    title = "Insulin Tracking",
+                    icon = Icons.Default.Healing,
+                    onClick = onNavigateToInsulinTracking
                 )
             }
         }

@@ -12,15 +12,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import `in`.bewithdhanu.medicinetracker.data.remote.RetrofitClient
+import `in`.bewithdhanu.medicinetracker.data.repository.InsulinRepository
 import `in`.bewithdhanu.medicinetracker.data.repository.MedicineRepository
 import `in`.bewithdhanu.medicinetracker.data.repository.ReminderRepository
 import `in`.bewithdhanu.medicinetracker.data.repository.UserRepository
 import `in`.bewithdhanu.medicinetracker.ui.navigation.Screen
 import `in`.bewithdhanu.medicinetracker.ui.screens.DashboardScreen
+import `in`.bewithdhanu.medicinetracker.ui.screens.InsulinTrackingScreen
 import `in`.bewithdhanu.medicinetracker.ui.screens.MedicinesScreen
 import `in`.bewithdhanu.medicinetracker.ui.screens.RemindersScreen
 import `in`.bewithdhanu.medicinetracker.ui.screens.UsersScreen
 import `in`.bewithdhanu.medicinetracker.ui.theme.MedicineTrackerTheme
+import `in`.bewithdhanu.medicinetracker.ui.viewmodel.InsulinViewModel
 import `in`.bewithdhanu.medicinetracker.ui.viewmodel.MedicineViewModel
 import `in`.bewithdhanu.medicinetracker.ui.viewmodel.ReminderViewModel
 import `in`.bewithdhanu.medicinetracker.ui.viewmodel.UserViewModel
@@ -35,10 +38,12 @@ class MainActivity : ComponentActivity() {
         val userRepository = UserRepository(apiService)
         val medicineRepository = MedicineRepository(apiService)
         val reminderRepository = ReminderRepository(apiService)
+        val insulinRepository = InsulinRepository(apiService)
         
         val userViewModel = UserViewModel(userRepository)
         val medicineViewModel = MedicineViewModel(medicineRepository)
         val reminderViewModel = ReminderViewModel(reminderRepository)
+        val insulinViewModel = InsulinViewModel(insulinRepository)
         
         setContent {
             MedicineTrackerTheme {
@@ -63,6 +68,9 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onNavigateToReminders = {
                                     navController.navigate(Screen.Reminders.route)
+                                },
+                                onNavigateToInsulinTracking = {
+                                    navController.navigate(Screen.InsulinTracking.route)
                                 }
                             )
                         }
@@ -89,6 +97,15 @@ class MainActivity : ComponentActivity() {
                             RemindersScreen(
                                 reminderViewModel = reminderViewModel,
                                 medicineViewModel = medicineViewModel,
+                                userViewModel = userViewModel,
+                                onNavigateBack = { navController.navigateUp() }
+                            )
+                        }
+                        
+                        // Insulin Tracking
+                        composable(Screen.InsulinTracking.route) {
+                            InsulinTrackingScreen(
+                                insulinViewModel = insulinViewModel,
                                 userViewModel = userViewModel,
                                 onNavigateBack = { navController.navigateUp() }
                             )
