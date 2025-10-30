@@ -22,6 +22,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     photo_url = Column(String, nullable=True)
+    # Optional emoji avatar (e.g., "👨", "👩", "👴")
+    avatar_emoji = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -110,6 +112,10 @@ class Bookmark(Base):
     name = Column(String, nullable=False)
     phone_number = Column(String, nullable=False)
     contact_type = Column(String, nullable=False)  # "phone" or "whatsapp"
+    # Optional photo URL for contact avatar
+    photo_url = Column(String, nullable=True)
+    # Optional emoji for contact avatar (if user prefers emoji over image)
+    avatar_emoji = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
