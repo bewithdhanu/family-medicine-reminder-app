@@ -20,6 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import `in`.bewithdhanu.medicinetracker.R
 import `in`.bewithdhanu.medicinetracker.utils.CommunicationHelper
+import `in`.bewithdhanu.medicinetracker.ui.viewmodel.BookmarkViewModel
+import `in`.bewithdhanu.medicinetracker.data.model.Bookmark
+import `in`.bewithdhanu.medicinetracker.data.model.UpdateBookmarkRequest
+import `in`.bewithdhanu.medicinetracker.data.model.CreateBookmarkRequest
+import `in`.bewithdhanu.medicinetracker.utils.CameraHelper
 import `in`.bewithdhanu.medicinetracker.ui.components.ImagePickerDialog
 import androidx.compose.foundation.shape.CircleShape
 import coil.compose.AsyncImage
@@ -29,15 +34,17 @@ import android.net.Uri
  * Communication shortcuts card for Dashboard
  */
 @Composable
-fun CommunicationCard() {
+fun CommunicationCard(viewModel: BookmarkViewModel) {
     val context = LocalContext.current
     var showEditDialog by remember { mutableStateOf(false) }
     
-    // TODO: Store these in DataStore preferences
-    var phoneNumber1 by remember { mutableStateOf("+919876543210") }
-    var contactName1 by remember { mutableStateOf("Father") }
-    var phoneNumber2 by remember { mutableStateOf("+919876543211") }
-    var contactName2 by remember { mutableStateOf("Mother") }
+    val bookmarks by viewModel.bookmarks.collectAsState()
+    val contact1: Bookmark? = bookmarks.getOrNull(0)
+    val contact2: Bookmark? = bookmarks.getOrNull(1)
+    var phoneNumber1 by remember { mutableStateOf(contact1?.phoneNumber ?: "+919876543210") }
+    var contactName1 by remember { mutableStateOf(contact1?.name ?: "Father") }
+    var phoneNumber2 by remember { mutableStateOf(contact2?.phoneNumber ?: "+919876543211") }
+    var contactName2 by remember { mutableStateOf(contact2?.name ?: "Mother") }
     // Avatars (emoji or image)
     var contactEmoji1 by remember { mutableStateOf("👨") }
     var contactImageUri1 by remember { mutableStateOf<Uri?>(null) }
@@ -88,8 +95,8 @@ fun CommunicationCard() {
             ContactRow(
                 name = contactName1,
                 phoneNumber = phoneNumber1,
-                emoji = contactEmoji1,
-                imageUri = contactImageUri1,
+                emoji = contact1?.avatarEmoji ?: contactEmoji1,
+                imageUri = contact1?.photoUrl?.let { Uri.parse(it) } ?: contactImageUri1,
                 onCallClick = { CommunicationHelper.makePhoneCall(context, phoneNumber1) },
                 onWhatsAppClick = { CommunicationHelper.openWhatsAppChat(context, phoneNumber1) },
                 onAvatarClick = { showAvatarPickerFor = 1 }
@@ -101,8 +108,8 @@ fun CommunicationCard() {
             ContactRow(
                 name = contactName2,
                 phoneNumber = phoneNumber2,
-                emoji = contactEmoji2,
-                imageUri = contactImageUri2,
+                emoji = contact2?.avatarEmoji ?: contactEmoji2,
+                imageUri = contact2?.photoUrl?.let { Uri.parse(it) } ?: contactImageUri2,
                 onCallClick = { CommunicationHelper.makePhoneCall(context, phoneNumber2) },
                 onWhatsAppClick = { CommunicationHelper.openWhatsAppChat(context, phoneNumber2) },
                 onAvatarClick = { showAvatarPickerFor = 2 }
@@ -123,6 +130,45 @@ fun CommunicationCard() {
                 phoneNumber1 = number1
                 contactName2 = name2
                 phoneNumber2 = number2
+                // Persist to backend (create or update first two bookmarks)
+                if (contact1 == null) {
+                    viewModel.upsertBookmark(
+                        existingId = null,
+                        name = contactName1,
+                        phone = phoneNumber1,
+                        type = "phone",
+                        photoUrl = contactImageUri1?.let { CameraHelper.uriToBase64(context, it) }?.let { CameraHelper.base64ToDataUrl(it) },
+                        emoji = contactEmoji1
+                    )
+                } else {
+                    viewModel.upsertBookmark(
+                        existingId = contact1.id,
+                        name = contactName1,
+                        phone = phoneNumber1,
+                        type = contact1.contactType,
+                        photoUrl = contactImageUri1?.let { CameraHelper.uriToBase64(context, it) }?.let { CameraHelper.base64ToDataUrl(it) } ?: contact1.photoUrl,
+                        emoji = contactEmoji1
+                    )
+                }
+                if (contact2 == null) {
+                    viewModel.upsertBookmark(
+                        existingId = null,
+                        name = contactName2,
+                        phone = phoneNumber2,
+                        type = "phone",
+                        photoUrl = contactImageUri2?.let { CameraHelper.uriToBase64(context, it) }?.let { CameraHelper.base64ToDataUrl(it) },
+                        emoji = contactEmoji2
+                    )
+                } else {
+                    viewModel.upsertBookmark(
+                        existingId = contact2.id,
+                        name = contactName2,
+                        phone = phoneNumber2,
+                        type = contact2.contactType,
+                        photoUrl = contactImageUri2?.let { CameraHelper.uriToBase64(context, it) }?.let { CameraHelper.base64ToDataUrl(it) } ?: contact2.photoUrl,
+                        emoji = contactEmoji2
+                    )
+                }
                 showEditDialog = false
             }
         )

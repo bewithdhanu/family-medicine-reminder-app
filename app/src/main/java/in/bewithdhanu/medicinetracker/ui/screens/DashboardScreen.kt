@@ -14,6 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import `in`.bewithdhanu.medicinetracker.R
 import `in`.bewithdhanu.medicinetracker.ui.components.CommunicationCard
+import `in`.bewithdhanu.medicinetracker.data.remote.RetrofitClient
+import `in`.bewithdhanu.medicinetracker.data.repository.BookmarkRepository
+import `in`.bewithdhanu.medicinetracker.ui.viewmodel.BookmarkViewModel
+import androidx.compose.runtime.LaunchedEffect
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,6 +33,10 @@ fun DashboardScreen(
     onNavigateToReminders: () -> Unit,
     onNavigateToInsulinTracking: () -> Unit
 ) {
+    // Prepare Bookmark ViewModel (simple inline init for now)
+    val bookmarkRepository = remember { BookmarkRepository(RetrofitClient.apiService) }
+    val bookmarkViewModel = remember { BookmarkViewModel(bookmarkRepository) }
+    LaunchedEffect(Unit) { bookmarkViewModel.loadBookmarks() }
     var currentTime by remember { mutableStateOf(getCurrentTime()) }
     
     // Update time every minute
@@ -69,7 +77,7 @@ fun DashboardScreen(
             
             // Quick Communication Card
             item {
-                CommunicationCard()
+                CommunicationCard(viewModel = bookmarkViewModel)
             }
             
             // Quick Actions
