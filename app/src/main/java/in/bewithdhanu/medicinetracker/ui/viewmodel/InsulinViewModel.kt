@@ -84,13 +84,16 @@ class InsulinViewModel(private val repository: InsulinRepository) : ViewModel() 
     
     fun loadStats(userId: Int, period: String = "weekly") {
         viewModelScope.launch {
-            repository.getInsulinStats(userId, period)
-                .onSuccess { statsData ->
-                    _stats.value = statsData
-                }
-                .onFailure { error ->
-                    _stats.value = null
-                }
+            val result = when (period.lowercase()) {
+                "weekly" -> repository.getWeeklyStats(userId)
+                "monthly" -> repository.getMonthlyStats(userId)
+                else -> repository.getWeeklyStats(userId)
+            }
+            result.onSuccess { statsData ->
+                _stats.value = statsData
+            }.onFailure { error ->
+                _stats.value = null
+            }
         }
     }
     

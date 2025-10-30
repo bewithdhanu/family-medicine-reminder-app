@@ -56,7 +56,7 @@ class InsulinRepository(private val apiService: ApiService) {
     suspend fun getSuggestedDosage(glucoseReading: Float): Result<InsulinDosageSuggestion> = 
         withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getInsulinDosageSuggestion(glucoseReading)
+                val response = apiService.suggestInsulinDosage(glucoseReading)
                 if (response.isSuccessful && response.body() != null) {
                     Result.success(response.body()!!)
                 } else {
@@ -67,14 +67,28 @@ class InsulinRepository(private val apiService: ApiService) {
             }
         }
     
-    suspend fun getInsulinStats(userId: Int, period: String): Result<InsulinStats> = 
+    suspend fun getWeeklyStats(userId: Int): Result<InsulinStats> = 
         withContext(Dispatchers.IO) {
             try {
-                val response = apiService.getInsulinStats(userId, period)
+                val response = apiService.getWeeklyInsulinStats(userId)
                 if (response.isSuccessful && response.body() != null) {
                     Result.success(response.body()!!)
                 } else {
-                    Result.failure(Exception("Failed to fetch insulin stats: ${response.code()}"))
+                    Result.failure(Exception("Failed to fetch weekly insulin stats: ${response.code()}"))
+                }
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+    
+    suspend fun getMonthlyStats(userId: Int): Result<InsulinStats> = 
+        withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getMonthlyInsulinStats(userId)
+                if (response.isSuccessful && response.body() != null) {
+                    Result.success(response.body()!!)
+                } else {
+                    Result.failure(Exception("Failed to fetch monthly insulin stats: ${response.code()}"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

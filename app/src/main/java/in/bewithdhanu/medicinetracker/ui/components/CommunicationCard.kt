@@ -1,6 +1,7 @@
 package `in`.bewithdhanu.medicinetracker.ui.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CameraAlt
@@ -404,6 +405,7 @@ fun EditContactsDialog(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AvatarPickerDialog(
     currentEmoji: String?,

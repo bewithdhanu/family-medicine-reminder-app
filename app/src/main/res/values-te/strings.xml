@@ -25,6 +25,12 @@
     <string name="nav_reminders">రిమైండర్లు</string>
     <string name="nav_history">చరిత్ర</string>
     
+    <!-- Photo/Image Selection -->
+    <string name="select_photo_source">ఫోటో మూలాన్ని ఎంచుకోండి</string>
+    
+    <!-- Insulin Tracking -->
+    <string name="insulin_tracking_title">ఇన్సులిన్ ట్రాకింగ్</string>
+    
     <!-- Users -->
     <string name="users_title">వినియోగదారులు</string>
     <string name="add_user">వినియోగదారుని జోడించు</string>

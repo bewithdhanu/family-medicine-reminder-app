@@ -2,6 +2,7 @@ package `in`.bewithdhanu.medicinetracker.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -189,7 +190,7 @@ fun UserFilterChipsForInsulin(
     selectedUser: User?,
     onUserSelected: (User?) -> Unit
 ) {
-    LazyColumn(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),

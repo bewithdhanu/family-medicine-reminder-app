@@ -36,6 +36,7 @@ fun ContactsScreen(
     val error by viewModel.error.collectAsState()
     var showAddEditDialog by remember { mutableStateOf(false) }
     var editing: Bookmark? by remember { mutableStateOf(null) }
+    val context = LocalContext.current
     
     LaunchedEffect(Unit) { viewModel.loadBookmarks() }
     
@@ -82,7 +83,6 @@ fun ContactsScreen(
             initial = editing,
             onDismiss = { showAddEditDialog = false },
             onSave = { name, number, type, emoji, imageUri ->
-                val context = LocalContext.current
                 val dataUrl = imageUri?.let { CameraHelper.uriToBase64(context, it) }?.let { CameraHelper.base64ToDataUrl(it) }
                 viewModel.upsertBookmark(
                     existingId = editing?.id,
@@ -181,12 +181,19 @@ private fun AddEditContactDialog(
                     textStyle = LocalTextStyle.current.copy(fontSize = 20.sp)
                 )
                 // Contact Type
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     FilterChip(selected = contactType == "phone", onClick = { contactType = "phone" }, label = { Text("Phone", fontSize = 18.sp) })
                     FilterChip(selected = contactType == "whatsapp", onClick = { contactType = "whatsapp" }, label = { Text("WhatsApp", fontSize = 18.sp) })
                 }
                 // Avatar Controls
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Button(onClick = { showAvatarPicker = true }, modifier = Modifier.height(56.dp)) {
                         Icon(Icons.Default.CameraAlt, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
