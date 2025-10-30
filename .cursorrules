@@ -1,0 +1,68 @@
+# Medicine Tracker - Project Rules
+
+## App Purpose
+Family Medication Reminder and Launcher Application for elderly parents (tablet-optimized)
+
+## Architecture
+- **Frontend**: Android app (Kotlin + Jetpack Compose)
+- **Backend**: Python FastAPI + PostgreSQL (Docker Compose)
+- **Important**: Any feature changes may require updates to BOTH backend and frontend
+
+## Theme Support
+- Auto dark/light theme support enabled by default
+- Follow system theme preferences
+- Use Material 3 dynamic colors where available (Android 12+)
+
+## Language Support
+- Telugu (te) - Primary language
+- English (en) - Secondary language
+- All user-facing strings must be available in both languages
+- Use string resources for all text (no hardcoded strings)
+
+## Core Features
+### User Management
+- Support multiple users (any family member)
+- Each user has name and photo
+- Track individual medication consumption per user
+- Record who took medicine and whether it was taken
+
+### Medication Types
+- Tablet - Standard medication tracking
+- Injection - Standard medication tracking (same as tablet)
+- Insulin - Advanced tracking with glucose monitoring
+- **Important**: Tablet and Injection follow same process, Insulin requires glucose readings
+
+### Alert System
+- Use AlarmManager for reliable alerts
+- Full-screen alerts with medicine image and details
+- Audio notifications for alerts
+- Auto-snooze: 1 min wait → 10 min snooze × 3 times → Mark as pending
+- Manual snooze: 30 minutes option
+
+### Insulin Management
+- Prompt glucose test before insulin
+- Input glucose readings
+- Suggest insulin dosage based on readings
+- Display insulin tracking (daily/weekly/monthly views)
+
+### Dashboard/Launcher Features
+- Display current date/time with attractive background
+- Show missed medicines prominently
+- Quick access bookmarks for phone/WhatsApp calls
+- Clean, accessible interface
+
+## UI/UX Requirements
+- Tablet-optimized layout
+- Larger fonts for elderly users (bigger than standard)
+- Clean, minimal interface design
+- Medicine pictures visible on alerts
+- Easy-to-use interaction patterns
+
+## Technical Implementation
+- Store language preference in DataStore
+- Use Room Database for medication data
+- Implement MVVM architecture
+- Use WorkManager/AlarmManager for reminders
+- Support camera/gallery for medicine photos
+
+
